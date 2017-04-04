@@ -1,6 +1,6 @@
 class GroupsController < ApplicationController
   before_action :authenticate_user! , only: [:new, :create, :edit, :update, :destroy]
-  before_action :find_group_and_check_permission, only: [:edit, :update, :destroy]
+  before_action :find_group_and_check_permission, only: [:edit, :update, :destroy, :join , :quit]
   def index
     @groups = Group.all
   end
@@ -37,6 +37,33 @@ end
     render :new
   end
  end
+
+   def join
+   @group = Group.find(params[:id])
+
+    if !current_user.is_member_of?(@group)
+      current_user.join!(@group)
+      flash[:notice] = "收藏成功！"
+    else
+      flash[:warning] = "已收藏！"
+    end
+
+    redirect_to group_path(@group)
+  end
+
+  def quit
+    @group = Group.find(params[:id])
+
+    if current_user.is_member_of?(@group)
+      current_user.quit!(@group)
+      flash[:alert] = "已取消收藏！"
+    else
+      flash[:warning] = "未收藏，不用取消啦！"
+    end
+
+    redirect_to group_path(@group)
+  end
+
 
  private
 
