@@ -5,6 +5,11 @@ class PostsController < ApplicationController
   def new
     @group = Group.find(params[:group_id])
     @post = Post.new
+
+    if !current_user.is_member_of?(@group)
+      redirect_to group_path(@group), alert: "未收藏哦！"
+  	end
+
   end
 
   def create
@@ -19,6 +24,8 @@ class PostsController < ApplicationController
       render :new
     end
   end
+
+
 
 
   private
